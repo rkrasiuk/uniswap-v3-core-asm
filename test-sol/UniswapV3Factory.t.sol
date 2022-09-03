@@ -53,7 +53,7 @@ library Create2 {
     }
 }
 
-contract FullMathTest is Test {
+contract UniswapV3FactoryTest is Test {
     event PoolCreated(
         address indexed token0,
         address indexed token1,
@@ -121,6 +121,7 @@ contract FullMathTest is Test {
         address futurePoolAddress =
             Create2.getAddress(address(factory), type(UniswapV3Pool).creationCode, constructorArgs);
 
+        // TODO:
         vm.expectEmit(true, true, true, true, address(factory));
         emit PoolCreated(token0, token1, fee, tick, futurePoolAddress);
         address poolAddress = factory.createPool(tokenA, tokenB, fee);
