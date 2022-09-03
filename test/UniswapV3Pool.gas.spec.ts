@@ -48,7 +48,7 @@ describe('UniswapV3Pool gas tests', () => {
 
         const pool = await fix.createPool(feeAmount, tickSpacing)
 
-        const { swapExact0For1, swapToHigherPrice, mint, swapToLowerPrice } = await createPoolFunctions({
+        const { swapExact0For1, swapToHigherPrice, mint, swapToLowerPrice } = createPoolFunctions({
           swapTarget: fix.swapTargetCallee,
           token0: fix.token0,
           token1: fix.token1,

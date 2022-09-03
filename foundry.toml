@@ -1,0 +1,9 @@
+[profile.default]
+src = "contracts"
+test = "test-sol"
+remappings = ["core/=contracts/"]
+gas_reports = ["UniswapV3Factory"]
+
+[profile.asm]
+src = "contracts-asm"
+remappings = ["core/=contracts-asm/"]
