@@ -31,8 +31,20 @@ contract UniswapV3PoolDeployer is IUniswapV3PoolDeployer {
         uint24 fee,
         int24 tickSpacing
     ) internal returns (address pool) {
-        parameters = Parameters({factory: factory, token0: token0, token1: token1, fee: fee, tickSpacing: tickSpacing});
-        pool = address(new UniswapV3Pool{salt: keccak256(abi.encode(token0, token1, fee))}());
-        delete parameters;
+        bytes memory bytecode = type(UniswapV3Pool).creationCode;
+        assembly {
+            sstore(0, factory)
+            sstore(1, token0)
+            sstore(2, or(or(token1, shl(160, fee)), shl(184, tickSpacing)))
+
+            let ptr := mload(0x40)
+            mstore(add(ptr, 32), token0)
+            mstore(add(ptr, 64), token1)
+            mstore(add(ptr, 96), fee)
+            pool := create2(0, add(bytecode, 32), mload(bytecode), keccak256(add(ptr, 32), 96))
+            sstore(0, 0)
+            sstore(1, 0)
+            sstore(2, 0)
+        }
     }
 }
