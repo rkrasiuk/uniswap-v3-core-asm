@@ -63,8 +63,6 @@ contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegat
                 default {
                     token0 := tokenB
                     token1 := tokenA
-                    // mstore(128, tokenB)
-                    // mstore(148, tokenA)
                 }
 
             if iszero(token0) {
@@ -95,10 +93,24 @@ contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegat
             }
         }
 
-        // TODO: implement deploy in line
-        pool = deploy(address(this), token0, token1, fee, tickSpacing);
-
+        // pool = deploy(address(this), token0, token1, fee, tickSpacing);
+        bytes memory bytecode = type(UniswapV3Pool).creationCode;
         assembly {
+            // deploy start
+            sstore(0, address())
+            sstore(1, token0)
+            sstore(2, or(or(token1, shl(160, fee)), shl(184, tickSpacing)))
+
+            let ptr := mload(0x40)
+            mstore(add(ptr, 32), token0)
+            mstore(add(ptr, 64), token1)
+            mstore(add(ptr, 96), fee)
+            pool := create2(0, add(bytecode, 32), mload(bytecode), keccak256(add(ptr, 32), 96))
+            sstore(0, 0)
+            sstore(1, 0)
+            sstore(2, 0)
+            // deploy end
+
             sstore(storageLocation, pool)
 
             // compute reverse storage location
